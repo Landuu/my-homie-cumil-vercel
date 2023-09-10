@@ -1,21 +1,15 @@
+import sys
+sys.path.append('../utils')
 from http.server import BaseHTTPRequestHandler
-import os
-from dotenv import load_dotenv
-from upstash_redis import Redis
+from utils.db import get_db
+from utils.common import get_query_param, send_response_text
 
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        load_dotenv()
-        url = os.getenv("KV_REST_API_URL")
-        token = os.getenv("KV_REST_API_TOKEN")
-        redis = Redis(url=url, token=token)
+        code = get_query_param(self.path, 'code')
+        print(code is None)
+        redis = get_db()
 
-        data = redis.get('a')
-        print(data)
-        
-        self.send_response(200)
-        self.send_header('Content-type','text/plain')
-        self.end_headers()
-        self.wfile.write('Hello, test!'.encode('utf-8'))
+        send_response_text(self, 'Hllo, test!')
         return
